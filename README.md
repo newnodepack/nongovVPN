@@ -35,12 +35,13 @@ https://docs.docker.com/engine/install/ubuntu/
 
 ### Single Server as VPN Server (Easy)
 
+```env
 1. Create a `docker-compose.yml` file in Linux  
    or upload the project files via FTP.
 
 2. Edit the configuration values:
 
-```env
+
 VPN_ENCRYPTION_KEY="Generate a random 32-character encryption key using uppercase, lowercase letters and special characters (do NOT use $)"
 VPN_TLS_DOMAIN="Set a domain you want to mimic (example: google.com)"
 Save the file and run:
