@@ -1,0 +1,37 @@
+services:
+  vpn-server:
+    image: scbaek65/vpn-server:latest
+    container_name: vpn-server
+    restart: unless-stopped
+    privileged: true
+
+    ports:
+      - "443:443"
+
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+      - NET_RAW
+
+    devices:
+      - /dev/net/tun:/dev/net/tun
+
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.forwarding=1
+      - net.ipv4.conf.default.forwarding=1
+
+    environment:
+      - VPN_ENCRYPTION_KEY=xK9mQ2vL7nR4wT8jP1cF6bA3dH5gY0sE # Replace Here
+      - VPN_TLS_DOMAIN=www.duckduckgo.com # Replace Here
+      - VPN_DNS=8.8.8.8
+      - VPN_MTU=1300
+      - VPN_BIND_PORT=443
+
+    volumes:
+      - vpn-certs:/etc/vpn
+      - vpn-logs:/var/log/vpn
+
+volumes:
+  vpn-certs:
+  vpn-logs:

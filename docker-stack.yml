@@ -1,0 +1,56 @@
+services:
+  vpn-server:
+    image: scbaek65/vpn-server:latest
+    ports:
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 128M
+    volumes:
+      - vpn-certs:/etc/vpn
+      - vpn-logs:/var/log/vpn
+      - /dev/net/tun:/dev/net/tun
+
+    # ✅ 설정값 지정
+    environment:
+      - VPN_BIND_HOST=0.0.0.0
+      - VPN_BIND_PORT=443
+      - VPN_ENCRYPTION_KEY=xK9mQ2vL7nR4wT8jP1cF6bA3dH5gY0sE # Replace Here
+      - VPN_TLS_DOMAIN=www.duckduckgo.com # Replace Here
+      - VPN_DNS=8.8.8.8
+      - VPN_MTU=1300
+
+    networks:
+      - vpn-overlay
+
+volumes:
+  vpn-certs:
+    driver: local
+  vpn-logs:
+    driver: local
+
+networks:
+  vpn-overlay:
+    driver: overlay
+    attachable: true
